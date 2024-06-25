@@ -1,0 +1,7 @@
+connector_type: google_cloud_storage
+bucket: final_project_pnt
+prefix: prefix
+file_type: parquet
+buffer_size_mb: 5
+buffer_timeout_seconds: 300
+path_to_credentials_json_file: /home/src/personal-gcp.json
