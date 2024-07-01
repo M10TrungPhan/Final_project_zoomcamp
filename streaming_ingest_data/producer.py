@@ -21,11 +21,16 @@ def delivery_report(err, msg):
 
 def produce_data(bootstrap_servers, topic, file_path):
     producer = Producer({'bootstrap.servers':bootstrap_servers})
+    count = 0
     try:
+        
         for row in read_csv(file_path):
+            count +=1
             json_row = json.dumps(row)
             producer.produce(topic, value=json_row, callback=delivery_report)
             producer.flush()
+            # if count%1 ==0:
+                # time.sleep(100)
             
     except KeyboardInterrupt:
         pass 

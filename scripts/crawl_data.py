@@ -1,6 +1,6 @@
 import os
 import time 
-folder_data = './data/'
+folder_data = './data/raw/'
 # print(os.getcwd())
 # print(os.listdir(folder_data))
 # time.sleep(10)

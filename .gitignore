@@ -171,8 +171,12 @@ cython_debug/
 **.terraform.lock.*
 
 data/__MACOSX
-data/*.csv
-data/*.zip
+data/*/*.csv
+data/*/*.zip
+data/raw/*
 data/Divvy_Stations_Trips_2013
 data/Divvy_Stations_Trips_2013.zip
 keys
+
+docker/airflow/logs
+docker/airflow/plugins
