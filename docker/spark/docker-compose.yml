@@ -1,0 +1,61 @@
+version: "3.6"
+volumes:
+  shared-workspace:
+    name: "hadoop-distributed-file-system"
+    driver: local
+
+networks:
+  default:
+    name: ${PROJECT_NAME}-network
+    external: true
+
+services:
+  spark-master:
+    build:
+      context: .
+      dockerfile: spark-master.Dockerfile
+    container_name: spark-master
+    ports:
+    - 8080:8080
+    - 7077:7077
+    volumes:
+      - shared-workspace:/opt/workspace
+  
+  spark-worker-1:
+    build:
+      context: .
+      dockerfile: spark-worker.Dockerfile
+    container_name: spark-worker-1
+    environment:
+      - SPARK_WORKER_CORES=1
+      - SPARK_WORKER_MEMORY=1024m
+    ports:
+      - 8081:8081
+    volumes:
+      - shared-workspace:/opt/workspace
+    depends_on:
+      - spark-master
+
+  spark-worker-2:
+    build:
+      context: .
+      dockerfile: spark-worker.Dockerfile
+    container_name: spark-worker-2
+    environment:
+      - SPARK_WORKER_CORES=1
+      - SPARK_WORKER_MEMORY=1024m
+    ports:
+      - 8082:8081
+    volumes:
+      - shared-workspace:/opt/workspace
+    depends_on:
+      - spark-master
+
+  
+  jupyterlab:
+    image: jupyterlab
+    container_name: jupyterlab
+    ports:
+      - 8888:8888
+    volumes:
+      - shared-workspace:/opt/workspace
