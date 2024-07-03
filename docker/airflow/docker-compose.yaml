@@ -74,6 +74,11 @@ x-airflow-common:
     postgres:
       condition: service_healthy
 
+networks:
+  default:
+    name: ${PROJECT_NAME}-network
+    external: true
+
 services:
   postgres:
     container_name: ${POSTGRES_HOST:-postgresdb}
