@@ -38,6 +38,11 @@
 #
 # Feel free to modify this file to suit your needs.
 ---
+networks:
+  airflow_network:
+    name: ${PROJECT_NAME}-network
+    external: true
+
 version: '3'
 x-airflow-common:
   &airflow-common
@@ -47,7 +52,7 @@ x-airflow-common:
   build:
     context: .
     dockerfile: ./Dockerfile
-  env_file: '.env'
+  env_file: './.env'
   environment:
     &airflow-common-env
     AIRFLOW__CORE__EXECUTOR: LocalExecutor
@@ -67,24 +72,25 @@ x-airflow-common:
     - ./logs:/opt/airflow/logs
     - ./plugins:/opt/airflow/plugins
     - ~/.google/credentials/:/.google/credentials:ro
+    - file_storage:/file_storage
 
   user: "${AIRFLOW_UID:-50000}:0"
+  networks:
+    - airflow_network
+
   depends_on:
     &airflow-common-depends-on
     postgres:
       condition: service_healthy
 
-networks:
-  default:
-    name: ${PROJECT_NAME}-network
-    external: true
+
 
 services:
   postgres:
     container_name: ${POSTGRES_HOST:-postgresdb}
     image: postgres:13
     env_file:
-      - 'env'
+      - './.env'
     # environment:
     #   POSTGRES_USER: airflow
     #   POSTGRES_PASSWORD: airflow
@@ -98,6 +104,8 @@ services:
       interval: 5s
       retries: 5
     restart: always
+    networks:
+      - airflow_network
 
   airflow-webserver:
     <<: *airflow-common
@@ -221,3 +229,5 @@ services:
 
 volumes:
   postgres-db-volume:
+  file_storage:
+  

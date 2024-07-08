@@ -1,0 +1,1 @@
+cd /mnt/d/coding/project/Final_project_zoomcamp/

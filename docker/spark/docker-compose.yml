@@ -4,8 +4,10 @@ volumes:
     name: "hadoop-distributed-file-system"
     driver: local
 
+  file_storage:
+
 networks:
-  default:
+  spark-network:
     name: ${PROJECT_NAME}-network
     external: true
 
@@ -16,11 +18,14 @@ services:
       dockerfile: spark-master.Dockerfile
     container_name: spark-master
     ports:
-    - 8080:8080
+    - 8083:8080
     - 7077:7077
     volumes:
       - shared-workspace:/opt/workspace
-  
+      - file_storage:/opt/file_storage
+    networks:
+      - spark-network
+
   spark-worker-1:
     build:
       context: .
@@ -35,6 +40,8 @@ services:
       - shared-workspace:/opt/workspace
     depends_on:
       - spark-master
+    networks:
+      - spark-network
 
   spark-worker-2:
     build:
@@ -50,6 +57,8 @@ services:
       - shared-workspace:/opt/workspace
     depends_on:
       - spark-master
+    networks:
+      - spark-network
 
   
   jupyterlab:
@@ -59,3 +68,5 @@ services:
       - 8888:8888
     volumes:
       - shared-workspace:/opt/workspace
+    networks:
+      - spark-network
