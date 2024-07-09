@@ -5,6 +5,9 @@ volumes:
     driver: local
 
   file_storage:
+    name: file_storage
+    driver: local
+    # external: true
 
 networks:
   spark-network:
@@ -22,7 +25,8 @@ services:
     - 7077:7077
     volumes:
       - shared-workspace:/opt/workspace
-      - file_storage:/opt/file_storage
+      - file_storage/raw/:/opt/file_storage/raw/
+      - file_storage/processed/:/opt/file_storage/processed/
     networks:
       - spark-network
 

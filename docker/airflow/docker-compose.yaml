@@ -72,7 +72,8 @@ x-airflow-common:
     - ./logs:/opt/airflow/logs
     - ./plugins:/opt/airflow/plugins
     - ~/.google/credentials/:/.google/credentials:ro
-    - file_storage:/file_storage
+    - file_storage:/opt/file_storage/
+    # - file_storage:/opt/file_storage/processed/
 
   user: "${AIRFLOW_UID:-50000}:0"
   networks:
@@ -230,4 +231,8 @@ services:
 volumes:
   postgres-db-volume:
   file_storage:
+    name: file_storage
+    # driver: local
+    external: true
+  
   

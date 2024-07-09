@@ -9,11 +9,11 @@ import os
         # if name_file_download not in os.listdir(folder_data):
         #     print(f"--- Data is crawling {name_file_download} ---")
         #     url = f"https://divvy-tripdata.s3.amazonaws.com/{name_file_download}"
-FILE_SHARE = os.getenv('FILE_STORAGE', '/file_storage/')
+FILE_SHARE = os.getenv('FILE_STORAGE', '/opt/file_storage/')
 URL_PREFIX = "https://divvy-tripdata.s3.amazonaws.com"
 
 URL_TEMPLATE = URL_PREFIX +  '/{{ execution_date.strftime(\'%Y-%m\') }}-divvy-tripdata.zip'
-OUTPUT_FILE = FILE_SHARE + 'raw/{{ execution_date.strftime(\'%Y-%m\') }}-divvy-tripdata.zip'
+OUTPUT_FILE = FILE_SHARE + '{{ execution_date.strftime(\'%Y-%m\') }}-divvy-tripdata.zip'
 
 local_workflow = DAG(
     "LocalIngestingDAG",
@@ -27,7 +27,7 @@ with local_workflow:
     wget_task = BashOperator(
         task_id = "Wgetdata",
         # bash_command= F'curl -sSL {URL_TEMPLATE} > {OUTPUT_FILE}'
-        bash_command = F'curl -sSL https://divvy-tripdata.s3.amazonaws.com/202301-divvy-tripdata.zip -O {OUTPUT_FILE}'
+        bash_command = F'curl -sSL https://divvy-tripdata.s3.amazonaws.com/202301-divvy-tripdata.zip > {OUTPUT_FILE}'
         # bash_command= 'echo Hello'
     )
 
