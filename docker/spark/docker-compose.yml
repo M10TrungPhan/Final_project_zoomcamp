@@ -2,12 +2,11 @@ version: "3.6"
 volumes:
   shared-workspace:
     name: "hadoop-distributed-file-system"
-    driver: local
+    external: true
 
   file_storage:
     name: file_storage
-    driver: local
-    # external: true
+    external: true
 
 networks:
   spark-network:
@@ -25,27 +24,30 @@ services:
     - 7077:7077
     volumes:
       - shared-workspace:/opt/workspace
-      - file_storage/raw/:/opt/file_storage/raw/
-      - file_storage/processed/:/opt/file_storage/processed/
+      - file_storage:/opt/file_storage/
+      # - file_storage/processed/:/opt/file_storage/processed/
     networks:
       - spark-network
-
+    # user: "${DOCKER_USER}"
+  
   spark-worker-1:
     build:
       context: .
       dockerfile: spark-worker.Dockerfile
     container_name: spark-worker-1
     environment:
-      - SPARK_WORKER_CORES=1
-      - SPARK_WORKER_MEMORY=1024m
+      - SPARK_WORKER_CORES=4
+      - SPARK_WORKER_MEMORY=2g
     ports:
       - 8081:8081
     volumes:
       - shared-workspace:/opt/workspace
+      - file_storage:/opt/file_storage/
     depends_on:
       - spark-master
     networks:
       - spark-network
+    # user: "${DOCKER_USER}"
 
   spark-worker-2:
     build:
@@ -53,16 +55,18 @@ services:
       dockerfile: spark-worker.Dockerfile
     container_name: spark-worker-2
     environment:
-      - SPARK_WORKER_CORES=1
-      - SPARK_WORKER_MEMORY=1024m
+      - SPARK_WORKER_CORES=4
+      - SPARK_WORKER_MEMORY=2g
     ports:
       - 8082:8081
     volumes:
       - shared-workspace:/opt/workspace
+      - file_storage:/opt/file_storage/
     depends_on:
       - spark-master
     networks:
       - spark-network
+    # user: "${DOCKER_USER}"
 
   
   jupyterlab:
@@ -74,3 +78,4 @@ services:
       - shared-workspace:/opt/workspace
     networks:
       - spark-network
+    # user: "${DOCKER_USER}"

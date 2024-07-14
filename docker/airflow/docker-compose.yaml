@@ -55,6 +55,7 @@ x-airflow-common:
   env_file: './.env'
   environment:
     &airflow-common-env
+    AIRFLOW__WEBSERVER__SHOW_TRIGGER_FORM_IF_NO_PARAMS: 'true'
     AIRFLOW__CORE__EXECUTOR: LocalExecutor
     AIRFLOW__CORE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres/airflow
     AIRFLOW__CORE__FERNET_KEY: ''
@@ -62,10 +63,10 @@ x-airflow-common:
     AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
     AIRFLOW__API__AUTH_BACKEND: 'airflow.api.auth.backend.basic_auth'
     _PIP_ADDITIONAL_REQUIREMENTS: ${_PIP_ADDITIONAL_REQUIREMENTS:-}
-    GOOGLE_APPLICATION_CREDENTIALS: /.google/credentials/google_credentials.json
-    AIRFLOW_CONN_GOOGLE_CLOUD_DEFAULT: 'google-cloud-platform://?extra__google_cloud_platform__key_path=/.google/credentials/google_credentials.json'
-    GCP_PROJECT_ID: 'abc'
-    GCP_GCS_BUCKET: "abc"
+    # GOOGLE_APPLICATION_CREDENTIALS: /.google/credentials/google_credentials.json
+    # AIRFLOW_CONN_GOOGLE_CLOUD_DEFAULT: 'google-cloud-platform://?extra__google_cloud_platform__key_path=/.google/credentials/google_credentials.json'
+    # GCP_PROJECT_ID: 'abc'
+    # GCP_GCS_BUCKET: "abc"
 
   volumes:
     - ./dags:/opt/airflow/dags
@@ -75,7 +76,7 @@ x-airflow-common:
     - file_storage:/opt/file_storage/
     # - file_storage:/opt/file_storage/processed/
 
-  user: "${AIRFLOW_UID:-50000}:0"
+  user: "${DOCKER_UID:-50000}:0"
   networks:
     - airflow_network
 
@@ -83,7 +84,8 @@ x-airflow-common:
     &airflow-common-depends-on
     postgres:
       condition: service_healthy
-
+  command:
+    - bash -c mkdir  /opt/file_storage/data/processed
 
 
 services:
@@ -104,7 +106,7 @@ services:
       test: ["CMD", "pg_isready", "-U", "airflow"]
       interval: 5s
       retries: 5
-    restart: always
+    # restart: always
     networks:
       - airflow_network
 
@@ -118,7 +120,7 @@ services:
       interval: 10s
       timeout: 10s
       retries: 5
-    restart: always
+    # restart: always
     depends_on:
       <<: *airflow-common-depends-on
       airflow-init:
@@ -132,7 +134,7 @@ services:
       interval: 10s
       timeout: 10s
       retries: 5
-    restart: always
+    # restart: always
     depends_on:
       <<: *airflow-common-depends-on
       airflow-init:
@@ -152,18 +154,12 @@ services:
         airflow_version_comparable=$$(ver $${airflow_version})
         min_airflow_version=2.2.0
         min_airflow_version_comparable=$$(ver $${min_airflow_version})
-        if (( airflow_version_comparable < min_airflow_version_comparable )); then
+ 
+        if [[ -z "${DOCKER_UID}" ]]; then
           echo
-          echo -e "\033[1;31mERROR!!!: Too old Airflow version $${airflow_version}!\e[0m"
-          echo "The minimum Airflow version supported: $${min_airflow_version}. Only use this or higher!"
-          echo
-          exit 1
-        fi
-        if [[ -z "${AIRFLOW_UID}" ]]; then
-          echo
-          echo -e "\033[1;33mWARNING!!!: AIRFLOW_UID not set!\e[0m"
+          echo -e "\033[1;33mWARNING!!!: DOCKER_UID not set!\e[0m"
           echo "If you are on Linux, you SHOULD follow the instructions below to set "
-          echo "AIRFLOW_UID environment variable, otherwise files will be owned by root."
+          echo "DOCKER_UID environment variable, otherwise files will be owned by root."
           echo "For other operating systems you can get rid of the warning with manually created .env file:"
           echo "    See: https://airflow.apache.org/docs/apache-airflow/stable/start/docker.html#setting-the-right-airflow-user"
           echo
@@ -202,7 +198,9 @@ services:
           echo
         fi
         mkdir -p /sources/logs /sources/dags /sources/plugins
-        chown -R "${AIRFLOW_UID}:0" /sources/{logs,dags,plugins}
+        mkdir -p /opt/file_storage/data/raw /opt/file_storage/data/processed
+
+        chown -R "${DOCKER_UID}:0" /sources/{logs,dags,plugins}
         exec /entrypoint airflow version
     # yamllint enable rule:line-length
     environment:
