@@ -1,2 +1,21 @@
 cd /mnt/d/coding/project/Final_project_zoomcamp/
 pip3 install wget pyspark==3.0.0 
+
+
+ride_id VARCHAR(20)  NOT NULL 
+rideable_type VARCHAR(20)  NULL 
+started_at TIMESTAMP  NOT NULL
+ended_at TIMESTAMP  NOT NULL
+start_station_name VARCHAR(20) NULL
+start_station_id VARCHAR(20) NULL
+end_station_name VARCHAR(20) NULL
+end_station_id VARCHAR(20) NULL
+start_lat DOUBLE PRECISION NULL
+start_lng DOUBLE PRECISION NULL
+end_lat DOUBLE PRECISION NULL
+end_lng DOUBLE PRECISION NULL
+member_casual VARCHAR(20) NULL
+
+
+station_id VARCHAR(20)  NOT NULL 
+station_name VARCHAR(20)  NOT NULL 

@@ -25,7 +25,7 @@ local_workflow = DAG(
     "LocalIngestingDAG",
     schedule_interval="0 0 1 * *",
     start_date = datetime(2021, 12, 2),
-    # end_date = datetime(2023, 12, 30),
+    end_date = datetime(2022, 12, 30),
     catchup=True
 )
 
