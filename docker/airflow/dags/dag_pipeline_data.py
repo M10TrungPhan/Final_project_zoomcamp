@@ -11,8 +11,8 @@ from processed_data import procees_data
         #     print(f"--- Data is crawling {name_file_download} ---")
         #     url = f"https://divvy-tripdata.s3.amazonaws.com/{name_file_download}"
 FILE_SHARE = os.getenv('FILE_STORAGE', '/opt/file_storage/')
-RAW_FOLDER = FILE_SHARE + 'raw/'
-PROCESSED_FOLDER = FILE_SHARE + 'processed/'
+RAW_FOLDER = FILE_SHARE + 'data/raw/'
+PROCESSED_FOLDER = FILE_SHARE + 'data/processed/'
 URL_PREFIX = "https://divvy-tripdata.s3.amazonaws.com"
 
 URL_TEMPLATE = URL_PREFIX +  '/{{ execution_date.strftime(\'%Y%m\') }}-divvy-tripdata.zip'

@@ -1,5 +1,8 @@
 cd /mnt/d/coding/project/Final_project_zoomcamp/
 pip3 install wget pyspark==3.0.0 
+cd /mnt/e/TrungPhanADVN/Code/Project_DE/backup_final/Final_project_zoomcamp/docker/airflow/
+docker network create cycle-analytics-pnt-network
+docker volume create file_storage
 
 
 ride_id VARCHAR(20)  NOT NULL 

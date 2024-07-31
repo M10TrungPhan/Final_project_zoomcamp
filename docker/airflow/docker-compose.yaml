@@ -84,8 +84,7 @@ x-airflow-common:
     &airflow-common-depends-on
     postgres:
       condition: service_healthy
-  command:
-    - bash -c mkdir  /opt/file_storage/data/processed
+
 
 
 services:
@@ -128,7 +127,8 @@ services:
 
   airflow-scheduler:
     <<: *airflow-common
-    command: scheduler
+    command: scheduler && mkdir -p /opt/file_storage/data/processed && mkdir -p /opt/file_storage/data/raw
+    
     healthcheck:
       test: ["CMD-SHELL", 'airflow jobs check --job-type SchedulerJob --hostname "$${HOSTNAME}"']
       interval: 10s
@@ -139,7 +139,7 @@ services:
       <<: *airflow-common-depends-on
       airflow-init:
         condition: service_completed_successfully
-
+    
   airflow-init:
     <<: *airflow-common
     entrypoint: /bin/bash
